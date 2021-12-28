@@ -15,23 +15,22 @@ LRESULT WINAPI WndProc(HWND h_wnd, unsigned int msg, WPARAM wParam, LPARAM lPara
 }
 
 // Define function to create and show a window
-bool CreateShowWindow(HINSTANCE h_inst, long width, long height, LPCSTR name_window, LPCSTR name_window_class,
+bool CreateShowWindow(HINSTANCE h_inst, long width, long height, LPCWSTR name_window, LPCWSTR name_window_class,
     int cmd_show, bool windowed) {
     const DWORD kDwStyle = windowed ? WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX : WS_POPUP;
     const int kCmdShow = windowed ? cmd_show : SW_SHOWMAXIMIZED;
 
-    // Create window class structure
-    WNDCLASSEXA wcex = {sizeof(WNDCLASSEXA), CS_CLASSDC, WndProc, 0L, 0L, h_inst, nullptr, nullptr, nullptr, nullptr,
+    // Give a window procedure defined above
+    WNDCLASSEXW wcex = {sizeof(WNDCLASSEXW), CS_CLASSDC, WndProc, 0L, 0L, h_inst, nullptr, nullptr, nullptr, nullptr,
         name_window_class, nullptr};
-    // Register it
-    if (!RegisterClassExA(&wcex))
+    if (!RegisterClassExW(&wcex))
         return false;
 
     RECT rect;
     rect = {0, 0, width, height};
     AdjustWindowRectEx(&rect, kDwStyle, false, 0);
 
-    g_hWnd = CreateWindowExA(0, name_window_class, name_window, kDwStyle, CW_USEDEFAULT, CW_USEDEFAULT,
+    g_hWnd = CreateWindowExW(0, name_window_class, name_window, kDwStyle, CW_USEDEFAULT, CW_USEDEFAULT,
         rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, h_inst, nullptr);
     if (!g_hWnd)
         return false;
@@ -42,7 +41,16 @@ bool CreateShowWindow(HINSTANCE h_inst, long width, long height, LPCSTR name_win
 }
 
 int WINAPI WinMain(HINSTANCE h_inst, HINSTANCE h_pinst, LPSTR p_cmd, int cmd_show) {
-    bool flg = true;
-    flg = flg && CreateShowWindow(h_inst, 1280, 720, "Window name", "Window class name", cmd_show, false);
+    if (!CreateShowWindow(h_inst, 1280, 720, L"Window name", L"WINDOWCLASNAME", cmd_show, true))
+        return 1;
+    MSG msg;
+    while (true) {
+        if (PeekMessageW(&msg, nullptr, 0U, 0U, PM_REMOVE)) {
+            if (msg.message == WM_QUIT)
+                break;
+            DispatchMessageW(&msg);
+            continue;
+        }
+    }
     return 0;
 }
