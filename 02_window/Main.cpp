@@ -2,7 +2,7 @@
 
 #pragma comment(lib, "user32.lib")
 
-HWND g_hWnd;
+HWND g_hWnd = nullptr;
 
 // Define function to create and show a window
 bool CreateShowWindow(HINSTANCE h_inst, long width, long height, LPCWSTR name_window, LPCWSTR name_window_class,

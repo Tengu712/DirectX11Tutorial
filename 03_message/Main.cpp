@@ -2,7 +2,7 @@
 
 #pragma comment(lib, "user32.lib")
 
-HWND g_hWnd;
+HWND g_hWnd = nullptr;
 
 // Define window procedure for window class
 LRESULT WINAPI WndProc(HWND h_wnd, unsigned int msg, WPARAM wParam, LPARAM lParam) {
